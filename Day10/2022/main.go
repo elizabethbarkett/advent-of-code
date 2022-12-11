@@ -10,12 +10,27 @@ import (
 )
 
 var values []int
+var crt = 0
 var cycle = 0
 var x = 1
 
+var crtRow []string
+
+func incrementCycle() {
+	cycle += 1
+	if crt == x-1 || crt == x || crt == x+1 {
+		crtRow = append(crtRow, "#")
+	} else {
+		crtRow = append(crtRow, ".")
+	}
+	if crt == 39 {
+		crt = 0
+	} else {
+		crt += 1
+	}
+}
+
 func cycleCheck() {
-	//cycle += 1
-	fmt.Println("Cycle: ", cycle)
 	if cycle == 20 || cycle == 60 || cycle == 100 || cycle == 140 || cycle == 180 || cycle == 220 {
 		values = append(values, cycle*x)
 	}
@@ -31,14 +46,12 @@ func calculate(filename string) {
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 
-		fmt.Println("X: ", x)
-
 		i := scanner.Text()
 		d := strings.Split(i, " ")
 		instruction := d[0]
 
 		if instruction == "noop" {
-			cycle += 1
+			incrementCycle()
 			continue
 		}
 
@@ -46,24 +59,29 @@ func calculate(filename string) {
 			j := 1
 			v, _ := strconv.Atoi(d[1])
 			for j < 2 {
-				cycle += 1
+				incrementCycle()
 				cycleCheck()
 				j += 1
 			}
 			if j == 2 {
-				cycle += 1
+				incrementCycle()
 				cycleCheck()
 				x = x + v
 				continue
 			}
 		}
 	}
-	fmt.Println(values)
 	sum := 0
 	for _, v := range values {
 		sum += v
 	}
-	fmt.Println(sum)
+
+	for m, n := range crtRow {
+		if (m)%40 == 0 {
+			fmt.Println()
+		}
+		fmt.Print(n)
+	}
 }
 
 func main() {
